@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="form_block">
-                        <label>Name*</label><br>
+                        <label>Email*</label><br>
                         <input type="email" placeholder="Enter your email">
                     </div>
 
@@ -24,6 +24,10 @@
                     </div>
 
                     <button>Log in</button>
+
+                    <div class="form_block">
+                        <p class="sign_in">Don't have an account? <NuxtLink to="/register">Sign up</NuxtLink></p>
+                    </div>
                 </form>
             </div>
 
@@ -36,64 +40,87 @@
     .container {
         width: 100vw;
         height: 100vh;
-        display: grid;
-        place-items: center;
-        background: var(--b-gray);
 
         .panel {
-            width: 80vw;
-            height: 40vw;
+            width: 100%;
+            height: 100%;
             display: grid;
-            grid-template: 1fr / repeat(2, 0.5fr);
+            grid-template: 1fr / calc(1fr + 1fr / 8) calc(1fr - 1fr / 8);
             background: var(--b-white);
-            border-radius: 1vw;
             overflow: hidden;
+            position: relative;
+
+            @media screen and (max-width: 768px) {
+                grid-template: 1fr / 1fr;
+            }
 
             &_credentials {
                 display: grid;
                 place-items: center;
 
+                @media screen and (max-width: 768px) {
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+
                 form {
+                    @media screen and (max-width: 768px) {
+                        color: var(--b-white);
+                    }
 
                     .form_block {
-                        margin: 1vw 0;
+                        margin: 15px 0;
 
                         h2 {
-                            font-size: 2vw;
+                            font-size: 40px;
                         }
 
                         p, label{
-                            font-size: 1vw;
-                            padding: 1vw 0;
+                            font-size: 18px;
+                            padding: 10px 0;
                             font-weight: 300;
                         }
 
                         input {
-                            width: 20vw;
-                            padding: 0.5vw;
-                            font-size: 1vw;
+                            width: 350px;
+                            padding: 10px;
+                            font-size: 17px;
                             background: var(--b-white);
-                            border: 0.1vw solid var(--b-gray);
-                            margin: 0.5vw 0;
-                            border-radius: 0.3vw;
+                            border: 1px solid var(--b-gray);
+                            margin: 10px 0;
+                            border-radius: 6px;
+                        }
+
+                        .sign_in {
+                            font-weight: 400;
+                            color: var(--b-gray);
+                            text-align: center;
+
+                            a {
+                                @media screen and (max-width: 768px) {
+                                    color: var(--b-white);
+                                }
+                            }
                         }
                     }
 
                     button {
-                        width: 20vw;
-                        padding: 0.5vw 0;
+                        width: 350px;
+                        padding: 10px 0;
                         border: none;
-                        font-size: 1vw;
+                        font-size: 17px;
                         color: var(--b-white);
                         background: var(--b-black);
-                        border-radius: 0.3vw;
+                        border-radius: 6px;
                     }
                 }
             }
 
             &_image {
                 background-image: url(./../public/webp/books.webp);
-                background-size: contain;
+                background-size: cover;
                 background-position: center;
             }
         }
