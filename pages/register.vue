@@ -1,5 +1,46 @@
 <script setup>
-    
+    import { ref, onMounted } from 'vue';
+
+    // prevent the user from accessing the login page if they are already logged in
+    definePageMeta({
+        middleware: ['already-auth']    
+    });
+
+    // Importing the useUserStore function from the store
+    const useUser = useUserStore();
+
+    const firstName = ref(null);
+    const lastName = ref(null);
+    const email = ref(null);
+    const password = ref(null);
+    const errorMessage = ref(null);
+
+    // Function for login form validation
+    function validateForm() {
+        if (!firstName.value || !lastName.value || !email.value || !password.value) {
+            errorMessage.value = 'Invalid or missing credentials. Please try again.';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function to register the user
+    async function register(e) {
+        e.preventDefault();
+
+        // If the form is not valid, return
+        if (!validateForm()) {
+            return;
+        }
+
+        const hashedPassword = await hashing(email.value + password.value);
+        await useUser.userRegisterAction(firstName.value, lastName.value, email.value, hashedPassword);
+    }
+
+    onMounted(async () => {
+        
+    })
 </script>
 
 <template>
@@ -15,21 +56,30 @@
                     </div>
 
                     <div class="form_block">
-                        <label>Name*</label><br>
-                        <input type="text" placeholder="Enter your name">
+                        <label>First Name*</label><br>
+                        <input v-model="firstName" type="text" placeholder="Enter your first name">
+                    </div>
+
+                    <div class="form_block">
+                        <label>Last Name*</label><br>
+                        <input v-model="lastName" type="text" placeholder="Enter your last name">
                     </div>
 
                     <div class="form_block">
                         <label>Email*</label><br>
-                        <input type="email" placeholder="Enter your email">
+                        <input v-model="email" type="email" placeholder="Enter your email">
                     </div>
 
                     <div class="form_block">
                         <label>Password*</label><br>
-                        <input type="password" placeholder="Enter your password">
+                        <input v-model="password" type="password" placeholder="Enter your password">
                     </div>
 
-                    <button>Sign up</button>
+                    <div class="form_block" v-if="errorMessage">
+                        <p class="error_message">{{ errorMessage }}</p>
+                    </div>
+
+                    <button @click="register">Sign up</button>
 
                     <div class="form_block">
                         <p class="sign_up">Already have an account? <NuxtLink to="/login">Sign in</NuxtLink></p>
@@ -97,6 +147,12 @@
                             border-radius: 6px;
                         }
 
+                        .error_message {
+                            color: var(--b-red);
+                            font-size: 17px;
+                            font-weight: 700;
+                        }
+
                         .sign_up {
                             font-weight: 400;
                             color: var(--b-gray);
@@ -118,6 +174,7 @@
                         color: var(--b-white);
                         background: var(--b-black);
                         border-radius: 6px;
+                        cursor: pointer;
                     }
                 }
             }
