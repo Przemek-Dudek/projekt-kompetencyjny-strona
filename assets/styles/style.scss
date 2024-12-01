@@ -8,6 +8,22 @@
     outline: none;
 }
 
+*::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    border-radius: 1vw;
+  }
+   
+*::-webkit-scrollbar-track {
+    width: 7px;
+    height: 7px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--b-gray);
+    border-radius: 1vw;
+}
+
 :root {
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -17,8 +33,15 @@
     -webkit-tap-highlight-color: transparent;
     
     --b-black: #141618;
+    --b-blackish: rgba(20, 22, 24, 0.8);
+    --b-red: #B23B3B;
     --b-gray: #bdc3c7;
     --b-white: #ffffff;
+    --b-white-gray: #ecf0f1;
+}
+
+body {
+    overflow-x: hidden;
 }
 
 html, body {
@@ -29,4 +52,3 @@ a {
     text-decoration: none;
     color: var(--b-black);
 }
-  

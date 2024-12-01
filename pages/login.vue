@@ -1,5 +1,49 @@
 <script setup>
+    import { ref, onMounted, watch } from 'vue';
+
+    // prevent the user from accessing the login page if they are already logged in
+    definePageMeta({
+        middleware: ['already-auth']    
+    });
     
+    // Importing the useUserStore function from the store
+    const useUser = useUserStore();
+
+    const email = ref(null);
+    const password = ref(null);
+    const errorMessage = ref(null);
+
+    // Function for login form validation
+    function validateForm() {
+        if (!email.value || !password.value) {
+            errorMessage.value = 'Invalid or missing credentials. Please try again.';
+            return false;
+        }
+
+        return true;
+    }
+
+    // Function to login the user
+    async function login(e) {
+        e.preventDefault();
+
+        // If the form is not valid, return
+        if (!validateForm()) {
+            return;
+        }
+        
+        const hashedPassword = await hashing(email.value + password.value);
+        await useUser.userLoginAction(hashedPassword, email.value);
+
+        // If the user is logged in, redirect to the dashboard
+        if (useUser.userLoggedIn) {
+            await navigateTo('/dashboard', { replace: true });
+        }
+    }
+
+    onMounted(async () => {
+       
+    });
 </script>
 
 <template>
@@ -15,19 +59,24 @@
 
                     <div class="form_block">
                         <label>Email*</label><br>
-                        <input type="email" placeholder="Enter your email">
+                        <input v-model="email" type="email" placeholder="Enter your email">
                     </div>
 
                     <div class="form_block">
                         <label>Password*</label><br>
-                        <input type="password" placeholder="Enter your password">
+                        <input v-model="password" type="password" placeholder="Enter your password">
                     </div>
 
-                    <button>Log in</button>
+                    <div class="form_block" v-if="errorMessage">
+                        <p class="error_message">{{ errorMessage }}</p>
+                    </div>
+
+                    <button @click="login">Log in</button>
 
                     <div class="form_block">
                         <p class="sign_in">Don't have an account? <NuxtLink to="/register">Sign up</NuxtLink></p>
                     </div>
+
                 </form>
             </div>
 
@@ -93,6 +142,12 @@
                             border-radius: 6px;
                         }
 
+                        .error_message {
+                            color: var(--b-red);
+                            font-size: 17px;
+                            font-weight: 700;
+                        }
+
                         .sign_in {
                             font-weight: 400;
                             color: var(--b-gray);
@@ -114,6 +169,11 @@
                         color: var(--b-white);
                         background: var(--b-black);
                         border-radius: 6px;
+                        cursor: pointer;
+
+                        &:active {
+                            background: var(--b-blackish);
+                        }
                     }
                 }
             }
