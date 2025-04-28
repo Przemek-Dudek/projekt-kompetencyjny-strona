@@ -33,7 +33,13 @@
         }
         
         const hashedPassword = await hashing(email.value + password.value);
-        await useUser.userLoginAction(hashedPassword, email.value);
+        const response = await useUser.userLoginAction(hashedPassword, email.value);
+
+        // If the response is null (the user is not logged in), return
+        if (!response) {
+            errorMessage.value = 'Invalid or missing credentials. Please try again.';
+            return;
+        }
 
         // If the user is logged in, redirect to the dashboard
         if (useUser.userLoggedIn) {

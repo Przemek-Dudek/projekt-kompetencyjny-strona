@@ -35,7 +35,13 @@
         }
 
         const hashedPassword = await hashing(email.value + password.value);
-        await useUser.userRegisterAction(firstName.value, lastName.value, email.value, hashedPassword);
+        const response = await useUser.userRegisterAction(firstName.value, lastName.value, email.value, hashedPassword);
+
+        // If the response is false (the user is not registered), return
+        if (!response) {
+            errorMessage.value = 'Invalid or missing credentials. Please try again.';
+            return;
+        }
     }
 
     onMounted(async () => {

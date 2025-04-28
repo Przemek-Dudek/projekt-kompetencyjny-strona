@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia'
+import type { BorrowedBook, AvailableBook } from '~/models/book'
+import type { AccessTokenResponse } from '~/models/auth'
 
 export const useUserStore = defineStore('user', () => {
 
@@ -35,20 +37,23 @@ export const useUserStore = defineStore('user', () => {
       
       if (response) {
         const text = await response.text();
-        const json = JSON.parse(text);
+        const json: BorrowedBook[] = JSON.parse(text);
 
         userLoggedIn.value = JSON.stringify(true);
         userHash.value = hash;
         userEmail.value = email;
 
-        console.log(json);
+        // console.log(json);
         
+        // Set the borrowed books in the local storage
         userBorrowedBooks.value.setItem('borrowedBooks', JSON.stringify(json));
+        return json; // Return the borrowed books
       } else {
         throw new Error('Failed to login');
       }
     } catch (error) {
       console.error(error);
+      return null; // Return null if the login fails
     }
   }
 
@@ -100,21 +105,23 @@ export const useUserStore = defineStore('user', () => {
       });
 
       console.log(response);
+      return true; // Return true if the register succeeds
     } catch (error) {
       console.error("An error occured: ", error);
+      return false; // Return false if the register fails
     }
   }
 
   // This sets the access token
   const setAccessToken = async () => {
     try {
-      const response = await $fetch("/api/auth", {
+      const response = await $fetch<AccessTokenResponse>("/api/auth", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'grant_type=client_credentials&client_id=' + clientId + '&client_secret=' + clientSecret,
-        server: true,
+        // server: true,
       });
       
       if (response?.access_token) {
@@ -193,7 +200,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   // This gets all the available books
-  async function getAllAvailableBooks() {
+  async function getAllAvailableBooks(): Promise<AvailableBook[]> {
     try {
       const response: Blob = await $fetch('/api/books', {
         method: 'GET',
@@ -206,15 +213,16 @@ export const useUserStore = defineStore('user', () => {
 
       if (response) {
           const text = await response.text();
-          const jsonData = JSON.parse(text);
+          const jsonData: AvailableBook[] = JSON.parse(text);
           
-          // console.log(jsonData);
+          // console.log('Available books:', jsonData);
           return jsonData;
       } else {
         throw new Error('Failed to fetch the books');
       }
     } catch (error) {
       console.error("An error occured: ", error);
+      return [];
     }
   }
 
@@ -235,7 +243,7 @@ export const useUserStore = defineStore('user', () => {
   // This gets the user borrowed books
   const getUserBorrowedBooks = () => {  
     const books = userBorrowedBooks.value.getItem('borrowedBooks');
-    return (books ? JSON.parse(books) : []);
+    return (books ? JSON.parse(books) as BorrowedBook[] : []);
   }
 
   return {
