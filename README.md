@@ -1,4 +1,4 @@
-﻿# Library Management System
+﻿# Digital Library
 
 A modern web application for managing a library's book collection, built with Nuxt 3 and TypeScript.
 
